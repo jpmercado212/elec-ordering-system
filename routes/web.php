@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\InventoryController;
 
 Route::get('/', function () {
@@ -23,3 +24,6 @@ Route::delete('/products/{product}', [ProductController::class, 'destroy'])->nam
 
 //Inventory Routes
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+
+Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
