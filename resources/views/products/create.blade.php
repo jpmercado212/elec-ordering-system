@@ -1,36 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add Product | Ordering System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-</head>
-<body>
+@section('title', 'Add Product | Trendify')
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary py-3 shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="{{ route('products.index') }}">
-      Ordering System
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold">Add New Product</h1>
+    <a href="{{ route('products.index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Products
     </a>
-    <div>
-      <a href="{{ route('products.index') }}" class="btn btn-light btn-sm fw-semibold">
-        ← Back to Products
-      </a>
-    </div>
-  </div>
-</nav>
+</div>
 
-<main class="container py-4">
-  <div class="row justify-content-center">
+<div class="row justify-content-center">
     <div class="col-lg-8">
-
-      <header class="mb-4 text-center">
-        <h1 class="h3 fw-bold mb-1">Add New Product</h1>
-        <p class="text-secondary mb-0">Fill in the details below to create a new catalog item.</p>
-      </header>
 
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -198,6 +179,10 @@
     });
   }
 </script>
+@endsection
 
-</body>
-</html>
+@push('scripts')
+<script>
+// Move the image preview script to the scripts section if needed
+</script>
+@endpush

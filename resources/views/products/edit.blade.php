@@ -1,33 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Edit Product | Ordering System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary py-3 shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="{{ route('products.index') }}">
-      Ordering System
+@section('title', 'Edit Product | Trendify')
+
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold">Edit Product</h1>
+    <a href="{{ route('products.index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Products
     </a>
-    <div>
-      <a href="{{ route('products.index') }}" class="btn btn-light btn-sm fw-semibold">← Back to Products</a>
-    </div>
-  </div>
-</nav>
+</div>
 
-<main class="container py-4">
-  <div class="row justify-content-center">
+<div class="row justify-content-center">
     <div class="col-lg-8">
-
-      <header class="mb-4 text-center">
-        <h1 class="h3 fw-bold mb-1">Edit Product</h1>
-        <p class="text-secondary mb-0">Update details and image for this product.</p>
-      </header>
 
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -165,5 +149,4 @@
     });
   }
 </script>
-</body>
-</html>
+@endsection
