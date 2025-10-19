@@ -86,10 +86,10 @@
             
             <div class="mb-4">
               <h2 class="h6 text-uppercase text-muted mb-3">Media</h2>
-              <div class="row g-3 align-items-start">
-                <div class="col-md-8">
+              <div class="row g-3">
+                <div class="col-12">
                   <label class="form-label">Replace Image</label>
-                  <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
+                  <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*" id="imageInput">
                   <div class="form-text">Accepted formats: JPG, PNG, JPEG (max 2MB)</div>
                   @error('image')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
 
@@ -101,15 +101,24 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
-                  <div class="thumb-preview border rounded d-flex align-items-center justify-content-center">
-                    @if($product->image)
-                      <img id="preview-image" src="{{ asset('uploads/'.$product->image) }}" alt="Preview" class="thumb-64">
-                    @else
-                      <img id="preview-image" alt="Preview" class="thumb-64 d-none">
-                    @endif
-                    <span id="preview-placeholder" class="text-muted small {{ $product->image ? 'd-none' : '' }}">No preview</span>
-                  </div>
+                <div class="col-12">
+                  @if($product->image)
+                    <div class="image-preview-container border rounded position-relative overflow-hidden" id="imagePreviewContainer" style="max-width: 400px; height: 300px; background-color: #f8f9fa;">
+                      <img id="preview-image" src="{{ asset('uploads/'.$product->image) }}" alt="Preview" class="w-100 h-100 object-fit-contain">
+                    </div>
+                    <div id="preview-placeholder" class="d-none d-flex flex-column align-items-center justify-content-center border rounded text-muted" style="max-width: 400px; height: 200px; background-color: #f8f9fa;">
+                      <i class="bi bi-camera" style="font-size: 2rem; opacity: 0.5;"></i>
+                      <span class="small mt-2">No image selected</span>
+                    </div>
+                  @else
+                    <div class="image-preview-container border rounded position-relative overflow-hidden d-none" id="imagePreviewContainer" style="max-width: 400px; height: 300px; background-color: #f8f9fa;">
+                      <img id="preview-image" alt="Preview" class="w-100 h-100 object-fit-contain">
+                    </div>
+                    <div id="preview-placeholder" class="d-flex flex-column align-items-center justify-content-center border rounded text-muted" style="max-width: 400px; height: 200px; background-color: #f8f9fa;">
+                      <i class="bi bi-camera" style="font-size: 2rem; opacity: 0.5;"></i>
+                      <span class="small mt-2">No image selected</span>
+                    </div>
+                  @endif
                 </div>
               </div>
             </div>
@@ -129,24 +138,67 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
- 
-  const fileInput = document.querySelector('input[name="image"]');
+  const fileInput = document.getElementById('imageInput');
   const previewImg = document.getElementById('preview-image');
+  const previewContainer = document.getElementById('imagePreviewContainer');
   const previewPlaceholder = document.getElementById('preview-placeholder');
+  const removeImageCheckbox = document.getElementById('remove_image');
 
   if (fileInput) {
     fileInput.addEventListener('change', function(e){
       const [file] = e.target.files || [];
       if (file){
-        previewImg.src = URL.createObjectURL(file);
-        previewImg.classList.remove('d-none');
-        previewPlaceholder.classList.add('d-none');
+        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size must be less than 2MB');
+          fileInput.value = '';
+          return;
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file');
+          fileInput.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+          previewPlaceholder.classList.add('d-none');
+          
+          // Uncheck remove image checkbox if user selects new image
+          if (removeImageCheckbox) {
+            removeImageCheckbox.checked = false;
+          }
+        };
+        reader.readAsDataURL(file);
       } else {
-        previewImg.src = '';
-        previewImg.classList.add('d-none');
+        previewContainer.classList.add('d-none');
         previewPlaceholder.classList.remove('d-none');
       }
     });
   }
+
+  // Handle remove image checkbox
+  if (removeImageCheckbox) {
+    removeImageCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        previewContainer.classList.add('d-none');
+        previewPlaceholder.classList.remove('d-none');
+        fileInput.value = '';
+      } else {
+        // If unchecking and there's an original image, show it
+        const originalImage = "{{ $product->image ? asset('uploads/'.$product->image) : '' }}";
+        if (originalImage) {
+          previewImg.src = originalImage;
+          previewContainer.classList.remove('d-none');
+          previewPlaceholder.classList.add('d-none');
+        }
+      }
+    });
+  }
+</script>
 </script>
 @endsection

@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('inventory');
 
         if ($search = trim($request->input('search', ''))) {
             $query->where(function ($w) use ($search) {
@@ -31,14 +31,21 @@ class ProductController extends Controller
         $perPage = (int) $request->input('per_page', 10);
         $perPage = in_array($perPage, [10,20,30,50]) ? $perPage : 10;
 
-        $products = $query->orderBy($sort, $dir)->paginate($perPage)->appends($request->query());
+        // Handle sorting by available_quantity (which comes from inventory)
+        if ($sort === 'available_quantity') {
+            $query->leftJoin('inventory', 'products.product_id', '=', 'inventory.product_id')
+                  ->orderBy('inventory.quantity_in_stock', $dir)
+                  ->select('products.*');
+        } else {
+            $query->orderBy($sort, $dir);
+        }
+
+        $products = $query->paginate($perPage)->appends($request->query());
 
         $categories = Product::whereNotNull('category')->distinct()->orderBy('category')->pluck('category');
 
         return view('products.index', compact('products', 'categories', 'sort', 'dir'));
-    }
-
-    public function create()
+    }    public function create()
     {
         return view('products.create');
     }
@@ -61,7 +68,17 @@ class ProductController extends Controller
             $validated['image'] = $name;
         }
 
-        Product::create($validated);
+        // Remove available_quantity from product data since it's stored in inventory
+        $availableQuantity = $validated['available_quantity'];
+        unset($validated['available_quantity']);
+
+        $product = Product::create($validated);
+
+        // Create inventory record with the available quantity
+        \App\Models\Inventory::create([
+            'product_id' => $product->product_id,
+            'quantity_in_stock' => $availableQuantity,
+        ]);
 
         return redirect()->route('products.index')->with('success', 'Product has been added successfully!');
     }
@@ -108,7 +125,17 @@ class ProductController extends Controller
             unset($validated['image']);
         }
 
+        // Handle available_quantity separately for inventory sync
+        $availableQuantity = $validated['available_quantity'];
+        unset($validated['available_quantity']);
+
         $product->update($validated);
+
+        // Update or create inventory record
+        $product->inventory()->updateOrCreate(
+            ['product_id' => $product->product_id],
+            ['quantity_in_stock' => $availableQuantity]
+        );
 
         return redirect()->route('products.index')->with('success', 'Product updated.');
     }
@@ -119,6 +146,10 @@ class ProductController extends Controller
             $path = public_path('uploads/'.$product->image);
             if (File::exists($path)) @File::delete($path);
         }
+        
+        // Delete inventory record first (if exists)
+        $product->inventory()->delete();
+        
         $product->delete();
 
         return redirect()->route('products.index')->with('success', 'Product deleted.');
