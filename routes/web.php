@@ -24,6 +24,7 @@ Route::delete('/products/{product}', [ProductController::class, 'destroy'])->nam
 
 //Inventory Routes
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+Route::put('/inventory/{id}/update-stock', [InventoryController::class, 'updateStock'])->name('inventory.updateStock');
 
 Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
 Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');

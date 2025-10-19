@@ -17,7 +17,7 @@
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Product</h1>
-                    <p class="page-subtitle text-muted">Manage your product inventory</p>
+                        <p class="page-subtitle text-muted">Manage all products in your inventory</p>
                 </div>
                 
                 <div class="header-actions">
@@ -75,7 +75,7 @@
                                 <option value="product_id" @selected($sort==='product_id')>ID</option>
                                 <option value="product_name" @selected($sort==='product_name')>Name</option>
                                 <option value="price" @selected($sort==='price')>Price</option>
-                                <option value="available_quantity" @selected($sort==='available_quantity')>Stock</option>
+                                <option value="inventory.quantity_in_stock" @selected($sort==='inventory.quantity_in_stock')>Stock</option>
                                 <option value="created_at" @selected($sort==='created_at')>Created</option>
                             </select>
                             <select name="dir" class="form-select" style="max-width:100px">
@@ -173,11 +173,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="product-id">#{{ $p->product_id }}</span></td>
-                                    <td><span class="product-price">₱{{ number_format($p->price, 2) }}</span></td>
-                                    <td><span class="product-stock">{{ number_format($p->available_quantity) }} {{ $p->category === 'Juice' || $p->category === 'Oil' ? 'lt' : 'pcs' }}</span></td>
-                                    <td><span class="product-type">{{ $p->category ?: '—' }}</span></td>
-                                    <td><span class="status-badge {{ $statusClass }}">{{ ucfirst($status) }}</span></td>
+                                    <td>
+                                        <span class="product-id">#{{ $p->product_id }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-price">₱{{ number_format($p->price, 2) }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-stock">{{ number_format($p->inventory ? $p->inventory->quantity_in_stock : 0) }} {{ $p->category === 'Juice' || $p->category === 'Oil' ? 'lt' : 'pcs' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-type">{{ $p->category ?: '—' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ $statusClass }}">{{ ucfirst($status) }}</span>
+                                    </td>
                                     <td>
                                         <div class="action-cell">
                                             <div class="dropdown">

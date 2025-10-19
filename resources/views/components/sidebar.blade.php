@@ -27,7 +27,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/inventory">
+                <a class="nav-link {{ request()->is('inventory*') ? 'active' : '' }}" href="/inventory">
                     <i class="bi bi-boxes"></i>
                     <span>Inventory</span>
                 </a>

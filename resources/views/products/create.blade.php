@@ -117,23 +117,27 @@
 
             <div class="mb-4">
               <h2 class="h6 text-uppercase text-muted mb-3">Media</h2>
-              <div class="row g-3 align-items-start">
-                <div class="col-md-8">
+              <div class="row g-3">
+                <div class="col-12">
                   <label class="form-label">Product Image</label>
                   <input
                     type="file"
                     name="image"
                     class="form-control @error('image') is-invalid @enderror"
-                    accept="image/*">
+                    accept="image/*"
+                    id="imageInput">
                   <div class="form-text">Accepted formats: JPG, PNG, JPEG (max 2MB)</div>
                   @error('image')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                   @enderror
                 </div>
-                <div class="col-md-4">
-                  <div class="thumb-preview border rounded d-flex align-items-center justify-content-center">
-                    <img id="preview-image" alt="Preview" class="img-fluid d-none">
-                    <span id="preview-placeholder" class="text-muted small">No preview</span>
+                <div class="col-12">
+                  <div class="image-preview-container border rounded position-relative overflow-hidden d-none" id="imagePreviewContainer" style="max-width: 400px; height: 300px; background-color: #f8f9fa;">
+                    <img id="preview-image" alt="Preview" class="w-100 h-100 object-fit-contain">
+                  </div>
+                  <div id="preview-placeholder" class="d-flex flex-column align-items-center justify-content-center border rounded text-muted" style="max-width: 400px; height: 200px; background-color: #f8f9fa;">
+                    <i class="bi bi-camera" style="font-size: 2rem; opacity: 0.5;"></i>
+                    <span class="small mt-2">No image selected</span>
                   </div>
                 </div>
               </div>
@@ -160,20 +164,39 @@
 
 
 <script>
-  const fileInput = document.querySelector('input[name="image"]');
+  const fileInput = document.getElementById('imageInput');
   const previewImg = document.getElementById('preview-image');
+  const previewContainer = document.getElementById('imagePreviewContainer');
   const previewPlaceholder = document.getElementById('preview-placeholder');
 
   if (fileInput) {
     fileInput.addEventListener('change', function(e){
       const [file] = e.target.files || [];
       if (file){
-        previewImg.src = URL.createObjectURL(file);
-        previewImg.classList.remove('d-none');
-        previewPlaceholder.classList.add('d-none');
+        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size must be less than 2MB');
+          fileInput.value = '';
+          return;
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file');
+          fileInput.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+          previewPlaceholder.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
       } else {
         previewImg.src = '';
-        previewImg.classList.add('d-none');
+        previewContainer.classList.add('d-none');
         previewPlaceholder.classList.remove('d-none');
       }
     });
