@@ -34,8 +34,6 @@
                             @endforeach
                         </form>
                     </div>
-
-                    <!-- ❌ fixed typo: products.cdeate → ✅ products.create -->
                     <a href="{{ route('products.create') }}" class="btn btn-primary">
                         <i class="bi bi-plus-lg"></i>
                         <span>Add New Product</span>

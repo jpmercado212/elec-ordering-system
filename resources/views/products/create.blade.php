@@ -127,6 +127,7 @@
                     accept="image/*"
                     id="imageInput">
                   <div class="form-text">Accepted formats: JPG, PNG, JPEG (max 2MB)</div>
+                  <div id="fileValidationMessage" class="text-danger small mt-1" style="display: none;"></div>
                   @error('image')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                   @enderror
@@ -168,21 +169,36 @@
   const previewImg = document.getElementById('preview-image');
   const previewContainer = document.getElementById('imagePreviewContainer');
   const previewPlaceholder = document.getElementById('preview-placeholder');
+  const validationMessage = document.getElementById('fileValidationMessage');
+
+  function showValidationMessage(message) {
+    validationMessage.textContent = message;
+    validationMessage.style.display = 'block';
+    fileInput.classList.add('is-invalid');
+  }
+
+  function hideValidationMessage() {
+    validationMessage.style.display = 'none';
+    fileInput.classList.remove('is-invalid');
+  }
 
   if (fileInput) {
     fileInput.addEventListener('change', function(e){
       const [file] = e.target.files || [];
+      hideValidationMessage(); // Clear any previous validation messages
+      
       if (file){
-        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
-        if (file.size > 2 * 1024 * 1024) {
-          alert('File size must be less than 2MB');
+        // Validate file type - only JPG, JPEG, PNG allowed
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          showValidationMessage('Only JPG, JPEG, and PNG files are allowed.');
           fileInput.value = '';
           return;
         }
         
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          alert('Please select a valid image file');
+        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+          showValidationMessage('File size must be less than 2MB.');
           fileInput.value = '';
           return;
         }
@@ -198,6 +214,23 @@
         previewImg.src = '';
         previewContainer.classList.add('d-none');
         previewPlaceholder.classList.remove('d-none');
+      }
+    });
+  }
+
+  // Additional form submission validation
+  const form = document.querySelector('form[enctype="multipart/form-data"]');
+  if (form && fileInput) {
+    form.addEventListener('submit', function(e) {
+      const file = fileInput.files[0];
+      if (file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          e.preventDefault();
+          showValidationMessage('Only JPG, JPEG, and PNG files are allowed.');
+          fileInput.value = '';
+          return false;
+        }
       }
     });
   }
