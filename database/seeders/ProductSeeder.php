@@ -9,8 +9,7 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        Product::create([
-            // WOMEN
+        Product::insert([
             [
                 'product_name' => 'Floral Summer Dress',
                 'description' => 'Lightweight chiffon dress perfect for summer outings.',
@@ -32,7 +31,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // MEN
             [
                 'product_name' => 'Classic White Polo Shirt',
                 'description' => 'Breathable cotton polo perfect for casual and semi-formal wear.',
@@ -54,7 +52,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // KIDS
             [
                 'product_name' => 'Kids Graphic T-Shirt',
                 'description' => '100% cotton tee with fun cartoon print.',
@@ -76,7 +73,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // BABY
             [
                 'product_name' => 'Baby Onesie Set (3pcs)',
                 'description' => 'Soft organic cotton onesies in neutral colors.',
@@ -98,7 +94,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // SHOES
             [
                 'product_name' => 'White Canvas Sneakers',
                 'description' => 'Classic low-top sneakers with rubber soles.',
@@ -120,7 +115,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // BAGS
             [
                 'product_name' => 'Mini Crossbody Bag',
                 'description' => 'Compact faux-leather bag with adjustable strap.',
@@ -142,7 +136,6 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
-            // ACCESSORIES
             [
                 'product_name' => 'Gold Hoop Earrings',
                 'description' => 'Elegant and lightweight earrings with a smooth finish.',

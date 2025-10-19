@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return redirect()->route('products.index');
@@ -19,3 +20,6 @@ Route::put('/products/{product}', [ProductController::class, 'update'])->name('p
 
 
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
