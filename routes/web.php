@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\InventoryController;
 
 Route::get('/', function () {
     return redirect()->route('products.index');
 });
 
 
-
+// Product Routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
@@ -20,6 +21,10 @@ Route::put('/products/{product}', [ProductController::class, 'update'])->name('p
 
 
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+//Inventory Routes
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+Route::put('/inventory/{id}/update-stock', [InventoryController::class, 'updateStock'])->name('inventory.updateStock');
 
 Route::get('/orders', [OrderController::class, 'list'])->name('orders.list');
 Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');

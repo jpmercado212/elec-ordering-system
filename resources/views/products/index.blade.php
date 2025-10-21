@@ -1,129 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Products | Trendify</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('uploads/logo/logo.png') }}">
-    <link rel="shortcut icon" href="{{ asset('uploads/logo/logo.png') }}">
-    <meta name="theme-color" content="#6f42c1">
-   
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-   
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-<div class="layout d-flex">
+@section('title', 'Products | Trendify')
 
-    <!-- Sidebar -->
-    <aside class="app-sidebar d-none d-lg-flex flex-column">
-        <div class="sidebar-header">
-            <div class="d-flex align-items-center gap-2">
-                <img src="{{ asset('uploads/logo/logo.png') }}" alt="Trendify Logo" class="brand-logo-img">
-                <span class="brand-text fw-bold">Trendify</span>
-            </div>
-        </div>
-
-        <nav class="sidebar-nav flex-grow-1">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-grid"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <!-- ✅ Make Order tab clickable -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('orders.list') }}">
-                        <i class="bi bi-bag"></i>
-                        <span>Order</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('products.index') }}">
-                        <i class="bi bi-box-seam"></i>
-                        <span>Product</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-people"></i>
-                        <span>Customer</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-person-badge"></i>
-                        <span>Employee</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-receipt"></i>
-                        <span>Billing</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Analytics</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-gear"></i>
-                        <span>Setting</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a class="nav-link" href="#">
-                <i class="bi bi-life-preserver"></i>
-                <span>Help</span>
-            </a>
-            <a class="nav-link text-danger" href="#">
-                <i class="bi bi-box-arrow-left"></i>
-                <span>Log out</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main -->
-    <div class="app-main flex-grow-1">
-
-        <!-- Topbar -->
-        <header class="app-topbar">
-            <div class="topbar-search">
-                <i class="bi bi-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search" value="{{ request('search') }}">
-            </div>
-
-            <div class="topbar-actions">
-                <button class="btn-topbar">
-                    <i class="bi bi-bell"></i>
-                </button>
-                <div class="user-profile">
-                    <img src="{{ asset('uploads/profile/ian.jpg') }}" alt="Clarisse Rivera" class="user-avatar">
-                    <div class="user-info d-none d-md-block">
-                        <div class="user-name">Jan Adrian E. Sideno</div>
-                        <div class="user-email">
-                            <a href="mailto:janadriansideno@gmail.com" class="text-decoration-none">janadriansideno@gmail.com</a>
-                        </div>
-                    </div>
-                    <i class="bi bi-chevron-down ms-2 d-none d-md-inline"></i>
-                </div>
-            </div>
-        </header>
-
-        <!-- Content -->
-        <main class="app-content">
+@section('content')
+<div class="app-content">
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -137,7 +17,7 @@
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Product</h1>
-                    <p class="page-subtitle text-muted">Manage your product inventory</p>
+                        <p class="page-subtitle text-muted">Manage all products in your inventory</p>
                 </div>
                 
                 <div class="header-actions">
@@ -154,8 +34,6 @@
                             @endforeach
                         </form>
                     </div>
-
-                    <!-- ❌ fixed typo: products.cdeate → ✅ products.create -->
                     <a href="{{ route('products.create') }}" class="btn btn-primary">
                         <i class="bi bi-plus-lg"></i>
                         <span>Add New Product</span>
@@ -195,7 +73,7 @@
                                 <option value="product_id" @selected($sort==='product_id')>ID</option>
                                 <option value="product_name" @selected($sort==='product_name')>Name</option>
                                 <option value="price" @selected($sort==='price')>Price</option>
-                                <option value="available_quantity" @selected($sort==='available_quantity')>Stock</option>
+                                <option value="inventory.quantity_in_stock" @selected($sort==='inventory.quantity_in_stock')>Stock</option>
                                 <option value="created_at" @selected($sort==='created_at')>Created</option>
                             </select>
                             <select name="dir" class="form-select" style="max-width:100px">
@@ -293,11 +171,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="product-id">#{{ $p->product_id }}</span></td>
-                                    <td><span class="product-price">₱{{ number_format($p->price, 2) }}</span></td>
-                                    <td><span class="product-stock">{{ number_format($p->available_quantity) }} {{ $p->category === 'Juice' || $p->category === 'Oil' ? 'lt' : 'pcs' }}</span></td>
-                                    <td><span class="product-type">{{ $p->category ?: '—' }}</span></td>
-                                    <td><span class="status-badge {{ $statusClass }}">{{ ucfirst($status) }}</span></td>
+                                    <td>
+                                        <span class="product-id">#{{ $p->product_id }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-price">₱{{ number_format($p->price, 2) }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-stock">{{ number_format($p->inventory ? $p->inventory->quantity_in_stock : 0) }} {{ $p->category === 'Juice' || $p->category === 'Oil' ? 'lt' : 'pcs' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="product-type">{{ $p->category ?: '—' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ $statusClass }}">{{ ucfirst($status) }}</span>
+                                    </td>
                                     <td>
                                         <div class="action-cell">
                                             <div class="dropdown">
@@ -372,11 +260,5 @@
                     </div>
                 @endif
             </div>
-
-        </main>
-    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection

@@ -18,8 +18,19 @@ class Product extends Model
         'product_name',
         'description',
         'price',
-        'available_quantity',
         'category',
         'image',
     ];
+
+    protected $appends = ['available_quantity'];
+
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class, 'product_id', 'product_id');
+    }
+
+    public function getAvailableQuantityAttribute()
+    {
+        return $this->inventory ? $this->inventory->quantity_in_stock : 0;
+    }
 }

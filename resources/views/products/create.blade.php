@@ -1,36 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add Product | Ordering System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-</head>
-<body>
+@section('title', 'Add Product | Trendify')
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary py-3 shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="{{ route('products.index') }}">
-      Ordering System
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold">Add New Product</h1>
+    <a href="{{ route('products.index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Products
     </a>
-    <div>
-      <a href="{{ route('products.index') }}" class="btn btn-light btn-sm fw-semibold">
-        ← Back to Products
-      </a>
-    </div>
-  </div>
-</nav>
+</div>
 
-<main class="container py-4">
-  <div class="row justify-content-center">
+<div class="row justify-content-center">
     <div class="col-lg-8">
-
-      <header class="mb-4 text-center">
-        <h1 class="h3 fw-bold mb-1">Add New Product</h1>
-        <p class="text-secondary mb-0">Fill in the details below to create a new catalog item.</p>
-      </header>
 
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -136,23 +117,28 @@
 
             <div class="mb-4">
               <h2 class="h6 text-uppercase text-muted mb-3">Media</h2>
-              <div class="row g-3 align-items-start">
-                <div class="col-md-8">
+              <div class="row g-3">
+                <div class="col-12">
                   <label class="form-label">Product Image</label>
                   <input
                     type="file"
                     name="image"
                     class="form-control @error('image') is-invalid @enderror"
-                    accept="image/*">
+                    accept="image/*"
+                    id="imageInput">
                   <div class="form-text">Accepted formats: JPG, PNG, JPEG (max 2MB)</div>
+                  <div id="fileValidationMessage" class="text-danger small mt-1" style="display: none;"></div>
                   @error('image')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                   @enderror
                 </div>
-                <div class="col-md-4">
-                  <div class="thumb-preview border rounded d-flex align-items-center justify-content-center">
-                    <img id="preview-image" alt="Preview" class="img-fluid d-none">
-                    <span id="preview-placeholder" class="text-muted small">No preview</span>
+                <div class="col-12">
+                  <div class="image-preview-container border rounded position-relative overflow-hidden d-none" id="imagePreviewContainer" style="max-width: 400px; height: 300px; background-color: #f8f9fa;">
+                    <img id="preview-image" alt="Preview" class="w-100 h-100 object-fit-contain">
+                  </div>
+                  <div id="preview-placeholder" class="d-flex flex-column align-items-center justify-content-center border rounded text-muted" style="max-width: 400px; height: 200px; background-color: #f8f9fa;">
+                    <i class="bi bi-camera" style="font-size: 2rem; opacity: 0.5;"></i>
+                    <span class="small mt-2">No image selected</span>
                   </div>
                 </div>
               </div>
@@ -179,25 +165,80 @@
 
 
 <script>
-  const fileInput = document.querySelector('input[name="image"]');
+  const fileInput = document.getElementById('imageInput');
   const previewImg = document.getElementById('preview-image');
+  const previewContainer = document.getElementById('imagePreviewContainer');
   const previewPlaceholder = document.getElementById('preview-placeholder');
+  const validationMessage = document.getElementById('fileValidationMessage');
+
+  function showValidationMessage(message) {
+    validationMessage.textContent = message;
+    validationMessage.style.display = 'block';
+    fileInput.classList.add('is-invalid');
+  }
+
+  function hideValidationMessage() {
+    validationMessage.style.display = 'none';
+    fileInput.classList.remove('is-invalid');
+  }
 
   if (fileInput) {
     fileInput.addEventListener('change', function(e){
       const [file] = e.target.files || [];
+      hideValidationMessage(); // Clear any previous validation messages
+      
       if (file){
-        previewImg.src = URL.createObjectURL(file);
-        previewImg.classList.remove('d-none');
-        previewPlaceholder.classList.add('d-none');
+        // Validate file type - only JPG, JPEG, PNG allowed
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          showValidationMessage('Only JPG, JPEG, and PNG files are allowed.');
+          fileInput.value = '';
+          return;
+        }
+        
+        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+          showValidationMessage('File size must be less than 2MB.');
+          fileInput.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+          previewPlaceholder.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
       } else {
         previewImg.src = '';
-        previewImg.classList.add('d-none');
+        previewContainer.classList.add('d-none');
         previewPlaceholder.classList.remove('d-none');
       }
     });
   }
-</script>
 
-</body>
-</html>
+  // Additional form submission validation
+  const form = document.querySelector('form[enctype="multipart/form-data"]');
+  if (form && fileInput) {
+    form.addEventListener('submit', function(e) {
+      const file = fileInput.files[0];
+      if (file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          e.preventDefault();
+          showValidationMessage('Only JPG, JPEG, and PNG files are allowed.');
+          fileInput.value = '';
+          return false;
+        }
+      }
+    });
+  }
+</script>
+@endsection
+
+@push('scripts')
+<script>
+// Move the image preview script to the scripts section if needed
+</script>
+@endpush

@@ -11,12 +11,11 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     public function run(): void
-{
-    $this->call([
-        ProductSeeder::class,
-    ]);
-
-    $this->call(OrderSeeder::class);
-}
+    {
+        $this->call([
+            ProductSeeder::class,
+            InventorySeeder::class,
+        ]);
+    }
 
 }
